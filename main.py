@@ -1,13 +1,14 @@
 import csv
 import json
-from progress.bar import Bar
+import requests
+from tqdm import tqdm
 
 original_csv = 'hive.csv'
 new_csv = 'allAnnotations.csv'
 csvDelimiter = ','
 
 
-def getPointsConvertedToPandasObject(row, size, axisType):
+def getPointsConverted(row, size, axisType):
 
     jsonObjects = json.loads(row)
     arrayOfValues = []
@@ -53,12 +54,27 @@ def convert_annotations(csvfilename, delimiterused, newfilename):
             height = row[19]
             className = "cattle"
 
-            xmin = getPointsConvertedToPandasObject(row[24], width, 'xmin')
-            ymin = getPointsConvertedToPandasObject(row[24], height, 'ymin')
-            xmax = getPointsConvertedToPandasObject(row[24], width, 'xmax')
-            ymax = getPointsConvertedToPandasObject(row[24], height, 'ymax')
+            xmin = getPointsConverted(row[24], width, 'xmin')
+            ymin = getPointsConverted(row[24], height, 'ymin')
+            xmax = getPointsConverted(row[24], width, 'xmax')
+            ymax = getPointsConverted(row[24], height, 'ymax')
 
             writer.writerow([fileName, width, height, className, xmin, ymin, xmax, ymax])
 
 
-convert_annotations(original_csv, csvDelimiter, new_csv)
+def downloadImages(csvfilename, delimiterused):
+    with open(csvfilename, newline='') as file:
+        reader = csv.reader(file, delimiter=delimiterused, quotechar='"')
+        next(reader)
+
+        for row in tqdm(reader):
+            url = row[7]
+            filename = row[10]
+            saveDir = "images/" + filename + ".jpg"
+            myFile = requests.get(url)
+            open(saveDir, 'wb').write(myFile.content)
+
+
+# convert_annotations(original_csv, csvDelimiter, new_csv)
+
+downloadImages(original_csv, csvDelimiter)

@@ -74,7 +74,23 @@ def downloadImages(csvfilename, delimiterused):
             myFile = requests.get(url)
             open(saveDir, 'wb').write(myFile.content)
 
+# Works with tqdm on Colab
+# def downloadImages(csvfilename, delimiterused):
+#     with open(csvfilename, newline='') as file:
+#         reader = csv.reader(file, delimiter=delimiterused, quotechar='"')
+#         next(reader)
+#         appendedRows = []
+
+#         for row in reader:
+#             appendedRows.append(row)
+
+#         for i in tqdm(range(len(list(appendedRows)))):
+#             url = appendedRows[i][7]
+#             filename = appendedRows[i][10]
+#             saveDir = "images/" + filename + ".jpg"
+#             myFile = requests.get(url)
+#             open(saveDir, 'wb').write(myFile.content)
+
 
 # convert_annotations(original_csv, csvDelimiter, new_csv)
-
 downloadImages(original_csv, csvDelimiter)
